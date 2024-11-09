@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion'
-import Particles from 'react-particles'
-import { loadFull } from 'tsparticles'
+import { Particles } from '@tsparticles/react'
+import { loadSlim } from '@tsparticles/slim'
 import type { Engine } from '@tsparticles/engine'
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
@@ -64,11 +64,7 @@ export function InteractiveNameDisplay() {
     y.set(event.clientY - rect.top - rect.height / 2)
   }
   const particlesInit = useCallback(async (engine: Engine) => {
-    try {
-      await loadFull(engine)
-    } catch (error) {
-      console.error("Error initializing particles:", error)
-    }
+    await loadSlim(engine)
   }, [])
 
   const getGradient = () => {
