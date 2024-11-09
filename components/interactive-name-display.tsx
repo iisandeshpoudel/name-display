@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useEffect, useRef, useState, useCallback } from 'react'
-import { motion, useAnimation, useMotionValue, useTransform, animate } from 'framer-motion'
+import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion'
 import Particles from 'react-particles'
 import { loadFull } from 'tsparticles'
-import type { Engine } from 'tsparticles-engine'
+import type { Engine } from '@tsparticles/engine'
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -63,9 +63,12 @@ export function InteractiveNameDisplay() {
     x.set(event.clientX - rect.left - rect.width / 2)
     y.set(event.clientY - rect.top - rect.height / 2)
   }
-
   const particlesInit = useCallback(async (engine: Engine) => {
-    await loadFull(engine)
+    try {
+      await loadFull(engine)
+    } catch (error) {
+      console.error("Error initializing particles:", error)
+    }
   }, [])
 
   const getGradient = () => {
@@ -93,32 +96,64 @@ export function InteractiveNameDisplay() {
         id="tsparticles"
         init={particlesInit}
         options={{
-          fullScreen: { enable: true },
+          fullScreen: { enable: false },
+          background: {
+            color: {
+              value: "transparent",
+            },
+          },
+          fpsLimit: 120,
           particles: {
             number: { value: particleDensity, density: { enable: true, value_area: 800 } },
             color: { value: getGlowColor() },
-            shape: { type: 'circle' },
-            opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1 * animationSpeed, opacity_min: 0.1, sync: false } },
-            size: { value: 3, random: true, anim: { enable: true, speed: 2 * animationSpeed, size_min: 0.1, sync: false } },
+            shape: { type: "circle" },
+            opacity: {
+              value: 0.5,
+              random: true,
+              animation: {
+                enable: true,
+                speed: 1 * animationSpeed,
+                minimumValue: 0.1,
+                sync: false
+              }
+            },
+            size: {
+              value: 3,
+              random: true,
+              animation: {
+                enable: true,
+                speed: 2 * animationSpeed,
+                minimumValue: 0.1,
+                sync: false
+              }
+            },
             move: {
               enable: true,
               speed: 1 * animationSpeed,
-              direction: 'none',
+              direction: "none",
               random: true,
               straight: false,
-              out_mode: 'out',
+              outModes: {
+                default: "out"
+              },
               bounce: false,
             },
           },
           interactivity: {
-            detect_on: 'canvas',
+            detectsOn: "window",
             events: {
-              onhover: { enable: true, mode: 'repulse' },
-              onclick: { enable: true, mode: 'push' },
+              onHover: {
+                enable: true,
+                mode: "repulse"
+              },
+              onClick: {
+                enable: true,
+                mode: "push"
+              },
               resize: true
             },
           },
-          retina_detect: true
+          detectRetina: true
         }}
       />
       <motion.div
